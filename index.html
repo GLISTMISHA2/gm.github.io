@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Современное резюме</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --accent-color: #3b82f6;
+      --text-color: #1f2937;
+      --light-text: #6b7280;
+      --bg-color: #f9fafb;
+      --card-bg: #ffffff;
+      --border-color: #e5e7eb;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      --section-spacing: 20px;
+      --border-radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .a4-container {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 15mm;
+      box-sizing: border-box;
+      background-color: var(--card-bg);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .profile-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 3px solid var(--primary-color);
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .profile-photo:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+    }
+
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .upload-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .profile-photo:hover .upload-overlay {
+      opacity: 1;
+    }
+
+    #photoInput {
+      display: none;
+    }
+
+    .profile-info h1 {
+      font-size: 28px;
+      margin: 0 0 5px 0;
+      color: var(--text-color);
+      font-weight: 700;
+    }
+
+    .profile-info p {
+      font-size: 18px;
+      margin: 0;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    .contact-info {
+      text-align: right;
+    }
+
+    .contact-item {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--light-text);
+    }
+
+    .contact-item i {
+      margin-left: 8px;
+      color: var(--primary-color);
+    }
+
+    .resume-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--section-spacing);
+    }
+
+    .section {
+      margin-bottom: var(--section-spacing);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      font-size: 16px;
+    }
+
+    /* Опыт работы */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background-color: var(--primary-color);
+      opacity: 0.2;
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -30px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--primary-color);
+      border: 2px solid white;
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .timeline-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .timeline-date {
+      font-size: 14px;
+      color: var(--light-text);
+      background-color: var(--bg-color);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .timeline-subtitle {
+      font-size: 14px;
+      color: var(--primary-color);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .timeline-content {
+      font-size: 14px;
+      color: var(--text-color);
+    }
+
+    /* Навыки */
+    .skills-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .skill {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Языки */
+    .language {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .language-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .language-level {
+      font-size: 13px;
+      color: var(--light-text);
+      font-style: italic;
+    }
+
+    /* Образование */
+    .education-item {
+      margin-bottom: 20px;
+    }
+
+    .education-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 5px 0;
+    }
+
+    .education-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .education-place {
+      font-size: 14px;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    .education-date {
+      font-size: 14px;
+      color: var(--light-text);
+    }
+
+    .education-desc {
+      font-size: 14px;
+      color: var(--text-color);
+    }
+
+    /* Увлечения */
+    .hobbies-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hobby {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hobby i {
+      color: var(--primary-color);
+      font-size: 12px;
+    }
+
+    /* Кнопки */
+    .controls {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    #downloadBtn {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    #downloadBtn:hover {
+      background-color: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+
+    .add-btn {
+      background-color: var(--bg-color);
+      color: var(--primary-color);
+      border: 1px dashed var(--primary-color);
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 15px;
+      width: 100%;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .add-btn:hover {
+      background-color: rgba(37, 99, 235, 0.1);
+    }
+
+    /* Элементы с возможностью редактирования */
+    [contenteditable="true"] {
+      padding: 2px 5px;
+      border-radius: 4px;
+      min-height: 1em;
+      transition: all 0.3s;
+      border: 1px solid transparent;
+    }
+
+    [contenteditable="true"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background-color: rgba(37, 99, 235, 0.05);
+    }
+
+    /* Анимации */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @media print {
+      body {
+        background: none;
+      font-size: 14px;
+      }
+      .a4-container {
+        box-shadow: none;
+        padding: 10mm;
+        width: 100%;
+        height: 100%;
+      }
+      .controls, .add-btn, .upload-overlay {
+        display: none;
+      }
+      .section {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="a4-container" id="resumeContent">
+    <div class="header">
+      <div class="profile">
+        <div class="profile-photo" id="photoUpload">
+          <img id="profileImage" src="https://via.placeholder.com/150" alt="Фото профиля">
+          <div class="upload-overlay">
+            <i class="fas fa-camera"></i>
+          </div>
+          <input type="file" id="photoInput" accept="image/*">
+        </div>
+        <div class="profile-info">
+          <h1 contenteditable="true">Александр Петров</h1>
+          <p contenteditable="true">Frontend разработчик</p>
+        </div>
+      </div>
+      <div class="contact-info">
+        <div class="contact-item" contenteditable="true"><i class="fas fa-phone"></i> +7 (987) 654-32-10</div>
+        <div class="contact-item" contenteditable="true"><i class="fas fa-envelope"></i> petrov@example.com</div>
+        <div class="contact-item" contenteditable="true"><i class="fas fa-map-marker-alt"></i> Санкт-Петербург</div>
+        <div class="contact-item" contenteditable="true"><i class="fab fa-github"></i> github.com/petrov</div>
+        <div class="contact-item" contenteditable="true"><i class="fab fa-linkedin"></i> linkedin.com/in/petrov</div>
+      </div>
+    </div>
+
+    <div class="resume-grid">
+      <!-- Левая колонка -->
+      <div class="left-column">
+        <div class="section">
+          <div class="section-title"><i class="fas fa-user"></i> Обо мне</div>
+          <div contenteditable="true" style="font-size: 14px; line-height: 1.7;">
+            Frontend разработчик с 5-летним опытом работы с современными JavaScript-фреймворками. 
+            Специализируюсь на создании адаптивных и производительных веб-приложений. 
+            Умею работать в команде и быстро осваивать новые технологии.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><i class="fas fa-briefcase"></i> Опыт работы</div>
+          <div class="timeline" id="experienceContainer">
+            <div class="timeline-item" contenteditable="true">
+              <div class="timeline-header">
+                <h3 class="timeline-title">Senior Frontend Developer</h3>
+                <div class="timeline-date">2021 - настоящее время</div>
+              </div>
+              <div class="timeline-subtitle">TechSolutions Inc.</div>
+              <div class="timeline-content">
+                - Разработка SPA-приложений на React.js<br>
+                - Оптимизация производительности приложений<br>
+                - Наставничество junior-разработчиков
+              </div>
+            </div>
+
+            <div class="timeline-item" contenteditable="true">
+              <div class="timeline-header">
+                <h3 class="timeline-title">Frontend Developer</h3>
+                <div class="timeline-date">2018 - 2021</div>
+              </div>
+              <div class="timeline-subtitle">WebStudio LLC</div>
+              <div class="timeline-content">
+                - Создание адаптивных интерфейсов<br>
+                - Интеграция с REST API<br>
+                - Участие в code review
+              </div>
+            </div>
+          </div>
+          <button class="add-btn" id="addExperience"><i class="fas fa-plus"></i> Добавить опыт</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><i class="fas fa-graduation-cap"></i> Образование</div>
+          <div id="educationContainer">
+            <div class="education-item" contenteditable="true">
+              <h3 class="education-title">Магистр компьютерных наук</h3>
+              <div class="education-meta">
+                <div class="education-place">СПбГУ</div>
+                <div class="education-date">2016 - 2018</div>
+              </div>
+              <div class="education-desc">
+                Специализация: Веб-технологии и мобильная разработка. Диплом с отличием.
+              </div>
+            </div>
+          </div>
+          <button class="add-btn" id="addEducation"><i class="fas fa-plus"></i> Добавить образование</button>
+        </div>
+      </div>
+
+      <!-- Правая колонка -->
+      <div class="right-column">
+        <div class="section">
+          <div class="section-title"><i class="fas fa-code"></i> Навыки</div>
+          <div class="skills-container" id="skillsContainer">
+            <span class="skill" contenteditable="true">JavaScript</span>
+            <span class="skill" contenteditable="true">React</span>
+            <span class="skill" contenteditable="true">TypeScript</span>
+            <span class="skill" contenteditable="true">HTML/CSS</span>
+            <span class="skill" contenteditable="true">Redux</span>
+            <span class="skill" contenteditable="true">Node.js</span>
+            <span class="skill" contenteditable="true">Git</span>
+            <span class="skill" contenteditable="true">Webpack</span>
+            <span class="skill" contenteditable="true">REST API</span>
+            <span class="skill" contenteditable="true">GraphQL</span>
+          </div>
+          <button class="add-btn" id="addSkill"><i class="fas fa-plus"></i> Добавить навык</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><i class="fas fa-language"></i> Языки</div>
+          <div id="languagesContainer">
+            <div class="language" contenteditable="true">
+              <div class="language-name">
+                <span>🇷🇺 Русский</span>
+              </div>
+              <div class="language-level">Родной</div>
+            </div>
+            <div class="language" contenteditable="true">
+              <div class="language-name">
+                <span>🇬🇧 Английский</span>
+              </div>
+              <div class="language-level">B2 (Upper-Intermediate)</div>
+            </div>
+          </div>
+          <button class="add-btn" id="addLanguage"><i class="fas fa-plus"></i> Добавить язык</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><i class="fas fa-certificate"></i> Сертификаты</div>
+          <div id="certificatesContainer">
+            <div class="education-item" contenteditable="true">
+              <h3 class="education-title">Advanced React</h3>
+              <div class="education-meta">
+                <div class="education-place">Coursera</div>
+                <div class="education-date">2020</div>
+              </div>
+            </div>
+            <div class="education-item" contenteditable="true">
+              <h3 class="education-title">Modern JavaScript</h3>
+              <div class="education-meta">
+                <div class="education-place">Udemy</div>
+                <div class="education-date">2019</div>
+              </div>
+            </div>
+          </div>
+          <button class="add-btn" id="addCertificate"><i class="fas fa-plus"></i> Добавить сертификат</button>
+        </div>
+
+        <div class="section">
+          <div class="section-title"><i class="fas fa-heart"></i> Увлечения</div>
+          <div class="hobbies-container" id="hobbiesContainer">
+            <span class="hobby" contenteditable="true"><i class="fas fa-laptop-code"></i> Программирование</span>
+            <span class="hobby" contenteditable="true"><i class="fas fa-book"></i> Чтение</span>
+            <span class="hobby" contenteditable="true"><i class="fas fa-hiking"></i> Походы</span>
+            <span class="hobby" contenteditable="true"><i class="fas fa-music"></i> Музыка</span>
+          </div>
+          <button class="add-btn" id="addHobby"><i class="fas fa-plus"></i> Добавить увлечение</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="downloadBtn"><i class="fas fa-download"></i> Сохранить в PDF</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Загрузка фото профиля
+      const photoUpload = document.getElementById('photoUpload');
+      const photoInput = document.getElementById('photoInput');
+      const profileImage = document.getElementById('profileImage');
+
+      photoUpload.addEventListener('click', function() {
+        photoInput.click();
+      });
+
+      photoInput.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+
+          reader.onload = function(event) {
+            profileImage.src = event.target.result;
+            localStorage.setItem('profilePhoto', event.target.result);
+          };
+
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+
+      // Загружаем сохраненное фото при загрузке страницы
+      if (localStorage.getItem('profilePhoto')) {
+        profileImage.src = localStorage.getItem('profilePhoto');
+      }
+
+      // Сохранение изменений в LocalStorage
+      const editableElements = document.querySelectorAll('[contenteditable="true"]');
+      
+      editableElements.forEach(element => {
+        const key = 'resume-' + Array.from(element.parentNode.children).indexOf(element);
+        
+        if (localStorage.getItem(key)) {
+          element.innerHTML = localStorage.getItem(key);
+        }
+        
+        element.addEventListener('input', function() {
+          localStorage.setItem(key, this.innerHTML);
+        });
+      });
+
+      // Функции для добавления новых элементов
+      function addLanguage() {
+        const container = document.getElementById('languagesContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'language';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.innerHTML = `
+          <div class="language-name">
+            <span>🇺🇸 Новый язык</span>
+          </div>
+          <div class="language-level">Уровень</div>
+        `;
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      function addSkill() {
+        const container = document.getElementById('skillsContainer');
+        const newItem = document.createElement('span');
+        newItem.className = 'skill';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.textContent = 'Новый навык';
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      function addHobby() {
+        const container = document.getElementById('hobbiesContainer');
+        const newItem = document.createElement('span');
+        newItem.className = 'hobby';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.innerHTML = '<i class="fas fa-plus"></i> Новое увлечение';
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      function addCertificate() {
+        const container = document.getElementById('certificatesContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'education-item';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.innerHTML = `
+          <h3 class="education-title">Новый сертификат</h3>
+          <div class="education-meta">
+            <div class="education-place">Провайдер</div>
+            <div class="education-date">Год</div>
+          </div>
+        `;
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      function addEducation() {
+        const container = document.getElementById('educationContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'education-item';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.innerHTML = `
+          <h3 class="education-title">Новое образование</h3>
+          <div class="education-meta">
+            <div class="education-place">Учебное заведение</div>
+            <div class="education-date">Годы</div>
+          </div>
+          <div class="education-desc">Описание</div>
+        `;
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      function addExperience() {
+        const container = document.getElementById('experienceContainer');
+        const newItem = document.createElement('div');
+        newItem.className = 'timeline-item';
+        newItem.setAttribute('contenteditable', 'true');
+        newItem.innerHTML = `
+          <div class="timeline-header">
+            <h3 class="timeline-title">Новая должность</h3>
+            <div class="timeline-date">Годы</div>
+          </div>
+          <div class="timeline-subtitle">Компания</div>
+          <div class="timeline-content">
+            - Обязанности<br>
+            - Достижения
+          </div>
+        `;
+        container.appendChild(newItem);
+        newItem.focus();
+      }
+
+      // Назначение обработчиков кнопок
+      document.getElementById('addLanguage').addEventListener('click', addLanguage);
+      document.getElementById('addSkill').addEventListener('click', addSkill);
+      document.getElementById('addHobby').addEventListener('click', addHobby);
+      document.getElementById('addCertificate').addEventListener('click', addCertificate);
+      document.getElementById('addEducation').addEventListener('click', addEducation);
+      document.getElementById('addExperience').addEventListener('click', addExperience);
+
+      // Обработка кнопки сохранения в PDF
+      document.getElementById('downloadBtn').addEventListener('click', function() {
+        const element = document.getElementById('resumeContent');
+        const opt = {
+          margin: 10,
+          filename: 'Мое_резюме.pdf',
+          image: { type: 'jpeg', quality: 1.0 },
+          html2canvas: { 
+            scale: 3,
+            logging: false,
+            useCORS: true,
+            letterRendering: true,
+            dpi: 300
+          },
+          jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'portrait' 
+          }
+        };
+
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+          btn.style.visibility = 'hidden';
+        });
+
+        html2pdf().set(opt).from(element).save().then(() => {
+          buttons.forEach(btn => {
+            btn.style.visibility = 'visible';
+          });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
